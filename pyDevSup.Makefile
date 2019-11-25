@@ -49,9 +49,9 @@ include $(E3_REQUIRE_CONFIG)/DECOUPLE_FLAGS
 ##EXCLUDE_ARCHS += linux-ppc64e6500
 ##EXCLUDE_ARCHS += linux-corei7-poky
 
-# APP:=calcApp
-# APPDB:=$(APP)/Db
-# APPSRC:=$(APP)/src
+APP:=devsupApp
+APPDB:=$(APP)/Db
+APPSRC:=$(APP)/src
 
 
 # USR_INCLUDES += -I$(where_am_I)$(APPSRC)
@@ -79,12 +79,16 @@ include $(E3_REQUIRE_CONFIG)/DECOUPLE_FLAGS
 # DBDINC_HDRS = $(subst .c,.h,     $(DBDINC_SRCS:$(APPSRC)/%=%))
 # DBDINC_DEPS = $(subst .c,$(DEP), $(DBDINC_SRCS:$(APPSRC)/%=%))
 
-
+HEADERS += $(APPSRC)/pydevsup.h
 # HEADERS += $(APPSRC)/sCalcPostfix.h
 # HEADERS += $(APPSRC)/aCalcPostfix.h
 # HEADERS += $(DBDINC_HDRS)
 
-
+SOURCES += $(APPSRC)/dbapi.c
+SOURCES += $(APPSRC)/dbdset.c
+SOURCES += $(APPSRC)/dbfield.c
+SOURCES += $(APPSRC)/dbrec.c
+SOURCES += $(APPSRC)/utest.c
 # SOURCES += $(APPSRC)/sCalcPostfix.c
 # SOURCES += $(APPSRC)/sCalcPerform.c
 # SOURCES += $(APPSRC)/aCalcPostfix.c
@@ -137,6 +141,23 @@ include $(E3_REQUIRE_CONFIG)/DECOUPLE_FLAGS
 
 # .PHONY: $(DBDINC_DEPS) .dbd.h
 # ## Record.dbd Generic codes : END
+
+PYTHON=python3
+include $(where_am_I)/configure/CONFIG_SITE
+
+PY_OK=YES
+HAVE_NUMPY=YES
+
+include $(where_am_I)/configure/CONFIG_PY
+
+USR_INCLUDES += -I${CONDA_PREFIX}/include/python3.7m
+USR_INCLUDES += -I${CONDA_PREFIX}/lib/python3.7/site-packages/numpy/core/include
+
+dbapi_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
+dbapi_CPPFLAGS += -DXPYDEV_BASE=\"$(abspath $(INSTALL_LOCATION))\"
+dbapi_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
+dbapi_CPPFLAGS += -DPYDIR=\"python$(PY_VER)\"
+
 
 # The following lines could be useful if one uses the external lib
 #

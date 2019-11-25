@@ -1,0 +1,3 @@
+[submodule "pyDevSup"]
+	path = pyDevSup
+	url = https://github.com/mdavidsaver/pyDevSup.git

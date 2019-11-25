@@ -41,8 +41,8 @@ endif
 
 
 ## Exclude linux-ppc64e6500
-##EXCLUDE_ARCHS += linux-ppc64e6500
-##EXCLUDE_ARCHS += linux-corei7-poky
+EXCLUDE_ARCHS += linux-ppc64e6500
+EXCLUDE_ARCHS += linux-corei7-poky
 
 APP:=devsupApp
 APPDB:=$(APP)/Db
@@ -55,12 +55,12 @@ USR_INCLUDES += -I$(where_am_I)$(APPSRC)
 USR_CPPFLAGS += -DUSE_TYPED_RSET
 
 USR_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
-USR_CPPFLAGS += -DXPYDEV_BASE=\"$(E3_MODULES_INSTALL_LOCATION))\"
+USR_CPPFLAGS += -DXPYDEV_BASE=\"$(E3_MODULES_INSTALL_LOCATION)\"
 USR_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
 #USR_CPPFLAGS += -DPYDIR=\"$(PYTHON)\"
 USR_CPPFLAGS += -DHAVE_NUMPY
-USR_CPPFLAGS += $(shell python-config --cflags)
 
+USR_CPPFLAGS += $(shell python-config --cflags)
 USR_LDFLAGS  += $(shell python-config --ldflags)
 
 
@@ -72,17 +72,22 @@ SOURCES += $(APPSRC)/dbrec.c
 SOURCES += $(APPSRC)/utest.c
 
 SCRIPTS += $(DEVSUP)/__init__.py
-SCRPITS += $(DEVSUP)/db.py
-SCRPITS += $(DEVSUP)/dset.py
-SCRPITS += $(DEVSUP)/hooks.py
-SCRPITS += $(DEVSUP)/interfaces.py
-SCRPITS += $(DEVSUP)/util.py
-SCRPITS += $(DEVSUP)/disect.py
-SCRPITS += $(DEVSUP)/ptable.py
+SCRIPTS += $(DEVSUP)/db.py
+SCRIPTS += $(DEVSUP)/dset.py
+SCRIPTS += $(DEVSUP)/hooks.py
+SCRIPTS += $(DEVSUP)/interfaces.py
+SCRIPTS += $(DEVSUP)/util.py
+SCRIPTS += $(DEVSUP)/disect.py
+SCRIPTS += $(DEVSUP)/ptable.py
 
-SCRPITS += $(DEVSUP)/test/__init__.py
-SCRPITS += $(DEVSUP)/test/util.py
-SCRPITS += $(DEVSUP)/test/test_db.py
+# We have no way to keep the same file name in the $(pyDevSup_DIR)
+# So, remove test here. Anyway, test is not necessary to keep them
+# in the production
+# Monday, November 25 23:44:15 CET 2019, jhlee
+
+#SCRIPTS += $(DEVSUP)/test/__init__.py
+#SCRIPTS += $(DEVSUP)/test/util.py
+#SCRIPTS += $(DEVSUP)/test/test_db.py
 
 
 SCRIPTS += $(wildcard ../iocsh/*.iocsh)

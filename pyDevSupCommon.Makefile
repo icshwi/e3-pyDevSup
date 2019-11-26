@@ -19,8 +19,8 @@
 # email   : saeedhaghtalab@esss.se
 #           jeonghan.lee@esss.se
 #          
-# Date    : Monday, November 25 22:58:57 CET 2019
-# version : 0.0.1
+# Date    : Tuesday, November 26 11:17:24 CET 2019
+# version : 0.0.2
 #
 ## The following lines are mandatory, please don't change them.
 where_am_I := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
@@ -55,7 +55,7 @@ USR_INCLUDES += -I$(where_am_I)$(APPSRC)
 #USR_CPPFLAGS += -DUSE_TYPED_RSET
 
 USR_CPPFLAGS += -DXEPICS_ARCH=\"$(T_A)\"
-USR_CPPFLAGS += -DXPYDEV_BASE=\"$(E3_MODULES_INSTALL_LOCATION)\"
+USR_CPPFLAGS += -DXPYDEV_BASE=\"$(pyDevSupCommon_DIR)\"
 USR_CPPFLAGS += -DXEPICS_BASE=\"$(EPICS_BASE)\"
 USR_CPPFLAGS += -DPYDIR=\"$(PYTHON)\"
 USR_CPPFLAGS += -DHAVE_NUMPY
@@ -65,6 +65,7 @@ USR_LDFLAGS  += $(shell python-config --ldflags)
 
 
 HEADERS += $(APPSRC)/pydevsup.h
+
 
 SOURCES += $(APPSRC)/dbapi.c
 SOURCES += $(APPSRC)/dbdset.c
@@ -90,8 +91,17 @@ SCRIPTS += $(DEVSUP)/ptable.py
 #SCRIPTS += $(DEVSUP)/test/util.py
 #SCRIPTS += $(DEVSUP)/test/test_db.py
 
+DBDS += $(COMMON_DIR)/pyDevSup.dbd
+
 
 SCRIPTS += $(wildcard ../iocsh/*.iocsh)
+
+# Fake the dbd file in order to trigger the generation of registerRecordDeviceDriver.cpp
+# Not yet sure, it will do correctly
+# Tuesday, November 26 11:17:04 CET 2019, jhlee
+utest$(DEP):
+	@rm -rf $(COMMON_DIR)/pyDevSup.dbd
+	@touch $(COMMON_DIR)/pyDevSup.dbd
 
 
 ## This RULE should be used in case of inflating DB files 
@@ -102,42 +112,7 @@ db:
 
 .PHONY: db 
 
-#
-# USR_DBFLAGS += -I . -I ..
-# USR_DBFLAGS += -I $(EPICS_BASE)/db
-# USR_DBFLAGS += -I $(APPDB)
-#
-# SUBS=$(wildcard $(APPDB)/*.substitutions)
-# TMPS=$(wildcard $(APPDB)/*.template)
-#
-# db: $(SUBS) $(TMPS)
-
-# $(SUBS):
-#	@printf "Inflating database ... %44s >>> %40s \n" "$@" "$(basename $(@)).db"
-#	@rm -f  $(basename $(@)).db.d  $(basename $(@)).db
-#	@$(MSI) -D $(USR_DBFLAGS) -o $(basename $(@)).db -S $@  > $(basename $(@)).db.d
-#	@$(MSI)    $(USR_DBFLAGS) -o $(basename $(@)).db -S $@
-
-# $(TMPS):
-#	@printf "Inflating database ... %44s >>> %40s \n" "$@" "$(basename $(@)).db"
-#	@rm -f  $(basename $(@)).db.d  $(basename $(@)).db
-#	@$(MSI) -D $(USR_DBFLAGS) -o $(basename $(@)).db $@  > $(basename $(@)).db.d
-#	@$(MSI)    $(USR_DBFLAGS) -o $(basename $(@)).db $@
-
-#
-# .PHONY: db $(SUBS) $(TMPS)
 
 vlibs:
 
 .PHONY: vlibs
-
-# vlibs: $(VENDOR_LIBS)
-
-# $(VENDOR_LIBS):
-# 	$(QUIET)$(SUDO) install -m 755 -d $(E3_MODULES_VENDOR_LIBS_LOCATION)/
-# 	$(QUIET)$(SUDO) install -m 755 $@ $(E3_MODULES_VENDOR_LIBS_LOCATION)/
-
-# .PHONY: $(VENDOR_LIBS) vlibs
-
-
-
